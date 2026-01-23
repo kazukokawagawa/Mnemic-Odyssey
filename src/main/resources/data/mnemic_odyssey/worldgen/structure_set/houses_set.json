@@ -1,0 +1,19 @@
+{
+  "structures": [
+    {
+      "structure": "mnemic_odyssey:house1",
+      "weight": 1
+    },
+    {
+      "structure": "mnemic_odyssey:house2",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 150,
+    "separation": 5,
+    "salt": 16458327,
+    "spread_type": "linear"
+  }
+}

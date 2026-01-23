@@ -1,0 +1,24 @@
+{
+  "processors": [
+    {
+      "processor_type": "minecraft:rule",
+      "rules": [
+        {
+          "location_predicate": {//用来检查方块所处的位置环境（比如：它是不是露天？它是不是在水里？）。
+            //只损毁露天方块
+            "predicate_type": "minecraft:block_match",//minecraft:always_true
+            "block": "minecraft:air"
+          },
+          "input_predicate": {//用来检查当前方块是什么
+            "predicate_type": "minecraft:random_block_match",
+            "block": "minecraft:oak_planks",
+            "probability": 0.08
+          },
+          "output_state": {
+            "Name": "minecraft:air"
+          }
+        }
+      ]
+    }
+  ]
+}

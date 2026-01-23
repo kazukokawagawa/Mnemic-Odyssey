@@ -8,11 +8,11 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.faketale.mnemic_odyssey.MnemicOdyssey;
-import org.faketale.mnemic_odyssey.item.MnemicOdysseyItems;
+import org.faketale.mnemic_odyssey.item.ModItems;
 
-public class MnemicOdysseyBlocks {
+public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MnemicOdyssey.MODID);
 
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = MnemicOdysseyItems.ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
+    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ModItems.ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
 }

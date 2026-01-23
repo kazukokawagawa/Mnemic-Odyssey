@@ -1,0 +1,15 @@
+{
+  "name": "mnemic_odyssey:house1_pool",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "mnemic_odyssey:house1",
+        "projection": "rigid",
+        "processors": "mnemic_odyssey:weathering_house1"
+      }
+    }
+  ]
+}

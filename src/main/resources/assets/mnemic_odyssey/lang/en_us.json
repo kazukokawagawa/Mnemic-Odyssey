@@ -1,5 +1,21 @@
 {
+  "mnemic_odyssey": "Mnemic Odyssey",
   "itemGroup.mnemic_odyssey": "Mnemic Odyssey",
   "block.mnemic_odyssey.example_block": "Example Block",
-  "item.mnemic_odyssey.example_item": "Example Item"
+  "item.mnemic_odyssey.example_item": "Example Item",
+  "itemGroup.mnemic_odyssey.blocks": "Mnemic Odyssey:Blocks",
+  "itemGroup.mnemic_odyssey.functional_blocks": "Mnemic Odyssey:Functional Blocks",
+  "itemGroup.mnemic_odyssey.ingredients": "Mnemic Odyssey:Ingredients",
+  "itemGroup.mnemic_odyssey.tools": "Mnemic Odyssey:Tools and Equipments",
+  "item.mnemic_odyssey.time_lens": "Time Lens",
+  "item.mnemic_odyssey.memory_codex": "Memory Codex",
+  "item.mnemic_odyssey.memory_slurry": "Memory Slurry",
+  "effect.mnemic_odyssey.memory_chaos" : "Memory Chaos",
+  "key.mnemic_odyssey.open_memory_codex": "Open memery codex",
+  "key.mnemic_odyssey.memory_torrent": "Memory torrent",
+  "message.mnemic_odyssey.welcome": "Welcome to Mnemic Odyssey!",
+  "gamerule.keepMemoryTorrent": "Keep Memory Torrent bar after death",
+  "gamerule.keepMemoryTorrent.description": "If on, players will retain the energy value and activation status of the Memory Torrent bar upon death and respawn.",
+  "commands.memorytorrent.set.success.single": "Set %s's Memory Torrent energy to %.1f",
+  "commands.memorytorrent.set.success.multiple": "Set %s players' Memory Torrent energy to %.1f"
 }

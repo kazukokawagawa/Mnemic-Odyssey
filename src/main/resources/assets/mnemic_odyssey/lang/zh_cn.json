@@ -1,5 +1,21 @@
 {
+  "mnemic_odyssey": "寻忆之旅",
   "itemGroup.mnemic_odyssey": "寻忆之旅",
   "block.mnemic_odyssey.example_block": "示例方块",
-  "item.mnemic_odyssey.example_item": "示例物品"
+  "item.mnemic_odyssey.example_item": "示例物品",
+  "itemGroup.mnemic_odyssey.blocks": "寻忆之旅：方块",
+  "itemGroup.mnemic_odyssey.functional_blocks": "寻忆之旅：功能方块",
+  "itemGroup.mnemic_odyssey.ingredients": "寻忆之旅：原材料",
+  "itemGroup.mnemic_odyssey.tools": "寻忆之旅：工具与装备",
+  "item.mnemic_odyssey.time_lens": "时间透镜",
+  "item.mnemic_odyssey.memory_codex": "记忆图鉴",
+  "item.mnemic_odyssey.memory_slurry": "记忆原浆",
+  "effect.mnemic_odyssey.memory_chaos" : "记忆混乱",
+  "key.mnemic_odyssey.open_memory_codex": "打开记忆图鉴",
+  "key.mnemic_odyssey.memory_torrent": "忆如泉涌",
+  "message.mnemic_odyssey.welcome": "欢迎来到寻忆之旅！想要加入我们的 discord 服务器？请访问 114514.com",
+  "gamerule.keepMemoryTorrent": "死亡后保留忆如泉涌条",
+  "gamerule.keepMemoryTorrent.description": "开启后，玩家死亡重生时将保留忆如泉涌条的能量值和开启状态。",
+  "commands.memorytorrent.set.success.single": "已将 %s 的忆如泉涌能量设为 %.1f",
+  "commands.memorytorrent.set.success.multiple": "已将 %s 名玩家的忆如泉涌能量设为 %.1f"
 }
