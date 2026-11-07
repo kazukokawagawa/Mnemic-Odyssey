@@ -16,6 +16,13 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<Boolean>> HAS_JOINED_WORLD = ATTACHMENTS
             .register("has_joined_world", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).copyOnDeath().build());
 
+    //图鉴进度（属于玩家，死亡保留；图鉴物品只是打开它的钥匙）
+    public static final Supplier<AttachmentType<org.faketale.mnemic_odyssey.compendium.CompendiumData>> COMPENDIUM = ATTACHMENTS
+            .register("compendium", () -> AttachmentType.builder(org.faketale.mnemic_odyssey.compendium.CompendiumData::new)
+                    .serialize(org.faketale.mnemic_odyssey.compendium.CompendiumData.CODEC)
+                    .copyOnDeath()
+                    .build());
+
     //忆如泉涌技能充能进度
 //    public static final Supplier<AttachmentType<Float>> MEMORY_TORRENT = ATTACHMENT_TYPES
 //            .register("memory_torrent", () -> AttachmentType.builder(() -> 0.0f).serialize(Codec.FLOAT).build());

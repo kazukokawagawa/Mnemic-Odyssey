@@ -20,6 +20,7 @@ public class PlayerJoinLevelHandler {
             // 获取当前数据并同步
             MemoryTorrentData data = player.getData(ModAttachments.MEMORY_TORRENT.get());
             PacketDistributor.sendToPlayer(player, new EnergySyncPayload(data));
+            org.faketale.mnemic_odyssey.compendium.CompendiumLogic.sendFull(player);
         }
     }
 }

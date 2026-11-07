@@ -13,7 +13,7 @@ public class ModConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     //按键（GLFW 键码），在模组设置菜单中修改
-    public static final ModConfigSpec.IntValue OpenCodexKey = BUILDER.comment("Key code (GLFW) to open memory codex").defineInRange("Open Codex Key", org.lwjgl.glfw.GLFW.GLFW_KEY_B, -1, 512);
+    public static final ModConfigSpec.IntValue OpenCompendiumKey = BUILDER.comment("Key code (GLFW) to open memory compendium").defineInRange("Open Compendium Key", org.lwjgl.glfw.GLFW.GLFW_KEY_B, -1, 512);
     public static final ModConfigSpec.IntValue MemoryTorrentKey = BUILDER.comment("Key code (GLFW) to trigger memory torrent").defineInRange("Memory Torrent Key", org.lwjgl.glfw.GLFW.GLFW_KEY_V, -1, 512);
     public static final ModConfigSpec.BooleanValue MemoryTorrentShow = BUILDER.comment("Whether to show the memory torrent bar").define("Memory Torrent Bar Show", true);
     //忆如泉涌条位置：屏幕比例坐标 (0~1)

@@ -28,10 +28,13 @@ public class PlayerTickHandler {
         if(player.isAlive()){
             //如果开启了技能，每tick-
             if(data.active()){
-                player.setData(ModAttachments.MEMORY_TORRENT, data.addEnergy(-0.2f));
+                //有图鉴时持续 30 秒，没有图鉴只能维持 15 秒
+                float drain = MemoryTorrentData.getMaxEnergy() / (org.faketale.mnemic_odyssey.compendium.CompendiumLogic.hasCompendium(player) ? 600f : 300f);
+                MemoryTorrentData drained = data.addEnergy(-drain);
+                player.setData(ModAttachments.MEMORY_TORRENT, drained);
                 //如果没了就关闭技能
-                if(data.energy() <= 0f){
-                    player.setData(ModAttachments.MEMORY_TORRENT, data.withActive(false));
+                if(drained.energy() <= 0f){
+                    player.setData(ModAttachments.MEMORY_TORRENT, drained.withActive(false));
                     //在客户端播放灭火音效，代表没了
                     if(player.level().isClientSide) {
                         player.level().playLocalSound(player.getX(), player.getY(), player.getZ(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1.0f, 1.0f, false);

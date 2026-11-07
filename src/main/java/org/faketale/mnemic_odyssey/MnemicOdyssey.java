@@ -82,6 +82,6 @@ public class MnemicOdyssey {
 //    @SubscribeEvent
 //    public static void onRegisterReloadListeners(AddReloadListenerEvent event) {
 //        // 建议将 manager 设为单例以便后续访问
-//        event.addListener(new MemoryCodexManager());
+//        event.addListener(new MemoryCompendiumManager());
 //    }
 }
