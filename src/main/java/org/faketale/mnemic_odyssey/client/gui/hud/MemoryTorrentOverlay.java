@@ -23,7 +23,7 @@ public class MemoryTorrentOverlay {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        if(player == null) return;
+        if(player == null || !ModConfig.MemoryTorrentShow.get()) return;
 
         MemoryTorrentData data = player.getData(ModAttachments.MEMORY_TORRENT.get());
         float energy = data.energy();
@@ -79,5 +79,12 @@ public class MemoryTorrentOverlay {
             // 渲染完重置颜色，避免影响其他 GUI 渲染
             guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
+    }
+
+    /** 仅绘制空条（设置界面中条被隐藏时用来预览位置） */
+    public static void renderPreview(GuiGraphics guiGraphics, int x, int y) {
+        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 0.5F);
+        guiGraphics.blit(BAR_TEXTURE, x, y, 0, 0, barWidth, barHeight, 256, 256);
+        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

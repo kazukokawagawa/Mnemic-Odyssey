@@ -5,7 +5,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.faketale.mnemic_odyssey.MnemicOdyssey;
-import org.faketale.mnemic_odyssey.client.key.ModKeyBindings;
 
 /*
 * GUI示意图
@@ -124,7 +123,7 @@ public class MemoryCodexScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.minecraft.options.keyInventory.matches(keyCode, scanCode) || //按E可以关闭GUI
-                ModKeyBindings.OPEN_CODEX_GUI.matches(keyCode, scanCode)//按b可以关闭GUI
+                keyCode == org.faketale.mnemic_odyssey.config.ModConfig.OpenCodexKey.get()//按b可以关闭GUI
         ) {
             this.onClose();
             return true;
