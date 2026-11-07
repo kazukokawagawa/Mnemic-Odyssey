@@ -11,13 +11,13 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MemoryCodexManager extends SimpleJsonResourceReloadListener {
+public class MemoryCompendiumManager extends SimpleJsonResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     // 存储加载到的所有条目
-    private Map<ResourceLocation, MemoryCodexEntry> entries = new HashMap<>();
+    private Map<ResourceLocation, MemoryCompendiumEntry> entries = new HashMap<>();
 
-    public MemoryCodexManager() {
-        super(GSON, "data_driven/memory_codex");
+    public MemoryCompendiumManager() {
+        super(GSON, "data_driven/memory_compendium");
     }
 
     @Override

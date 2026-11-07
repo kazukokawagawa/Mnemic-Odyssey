@@ -7,12 +7,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.faketale.mnemic_odyssey.client.gui.screen.MemoryCodexScreen;
+import org.faketale.mnemic_odyssey.client.gui.screen.MemoryCompendiumScreen;
 import org.jetbrains.annotations.NotNull;
 
-public class MemoryCodex extends Item {
-    public MemoryCodex() {
-        super(new Item.Properties().stacksTo(1));
+public class MemoryCompendium extends Item {
+    public MemoryCompendium() {
+        super(new Item.Properties().stacksTo(1).fireResistant());
     }
 
     @Override
@@ -22,7 +22,7 @@ public class MemoryCodex extends Item {
 
         if (level.isClientSide){
             //打开GUI
-            Minecraft.getInstance().setScreen(new MemoryCodexScreen());
+            Minecraft.getInstance().setScreen(new MemoryCompendiumScreen());
         }
 
         return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide);

@@ -1,5 +1,5 @@
 package org.faketale.mnemic_odyssey.datagen;
 
-public class MemoryCodexGen {
+public class MemoryCompendiumGen {
     private final boolean StartGen = false;
 }

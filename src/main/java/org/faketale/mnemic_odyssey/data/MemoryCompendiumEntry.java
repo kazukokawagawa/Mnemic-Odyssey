@@ -3,11 +3,11 @@ package org.faketale.mnemic_odyssey.data;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-//enum MemoryCodexCategory {
+//enum MemoryCompendiumCategory {
 //
 //}
 
-public record MemoryCodexEntry(
+public record MemoryCompendiumEntry(
         //ResourceLocation icon,        // 图标项的 ID
         //Component title,              // 标题
         Component descriptionLv1,        // 描述

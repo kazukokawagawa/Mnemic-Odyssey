@@ -13,7 +13,7 @@ public class ModItems {
 
     //工具与装备
     public static final DeferredItem<Item> TimeLens = ITEMS.register("time_lens", TimeLens::new);//时间透镜
-    public static final DeferredItem<Item> MemoryCodex = ITEMS.register("memory_codex", MemoryCodex::new);//记忆图鉴
+    public static final DeferredItem<Item> MemoryCompendium = ITEMS.register("memory_compendium", MemoryCompendium::new);//记忆图鉴
 
     //原材料
     public static final DeferredItem<Item> MemorySlurry = ITEMS.registerSimpleItem("memory_slurry", new Item.Properties());//记忆原浆

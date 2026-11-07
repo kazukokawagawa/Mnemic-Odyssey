@@ -26,7 +26,7 @@ public class PlayerLoggedHandler {
             if (!player.getData(ModAttachments.HAS_JOINED_WORLD)) {
 
                 //给予物品
-                ItemStack guideBook = new ItemStack(ModItems.MemoryCodex.get());
+                ItemStack guideBook = new ItemStack(ModItems.MemoryCompendium.get());
                 //这里可以添加自定义 NBT 或组件
 
                 if (!player.getInventory().add(guideBook)) {

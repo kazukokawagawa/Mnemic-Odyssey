@@ -43,7 +43,7 @@ public class MnemicOdyssey {
         //注册游戏规则
         ModGameRules.register();
         //注册配置项
-        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, ModConfig.SPEC);
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, ModConfig.SPEC);
 
         // 注册我们自己以响应服务器和其他我们感兴趣的游戏事件。
         // 注意，只有当我们希望*这个*类（MnemicOdyssey）直接响应事件时，这一步才是必要的。
@@ -82,6 +82,6 @@ public class MnemicOdyssey {
 //    @SubscribeEvent
 //    public static void onRegisterReloadListeners(AddReloadListenerEvent event) {
 //        // 建议将 manager 设为单例以便后续访问
-//        event.addListener(new MemoryCodexManager());
+//        event.addListener(new MemoryCompendiumManager());
 //    }
 }

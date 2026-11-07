@@ -9,31 +9,21 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import org.faketale.mnemic_odyssey.MnemicOdyssey;
 import org.lwjgl.glfw.GLFW;
 
-import javax.swing.text.JTextComponent;
-
+/** 游戏按键设置中只保留“打开设置菜单”，其余按键在模组设置菜单中修改（见 ModConfig） */
 public class ModKeyBindings {
-    @EventBusSubscriber(modid = MnemicOdyssey.MODID, /*bus = EventBusSubscriber.Bus.MOD,*/ value = Dist.CLIENT)
+    @EventBusSubscriber(modid = MnemicOdyssey.MODID, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void registerKeys(RegisterKeyMappingsEvent event) {
-            event.register(OPEN_CODEX_GUI);
-            event.register(MEMORY_TORRENT);
+            event.register(OPEN_SETTINGS);
         }
     }
 
-    //打开图鉴
-    public static final KeyMapping OPEN_CODEX_GUI = new KeyMapping(
-            "key.mnemic_odyssey.open_memory_codex",//描述文字
+    //打开设置菜单
+    public static final KeyMapping OPEN_SETTINGS = new KeyMapping(
+            "key.mnemic_odyssey.open_settings",
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_B,//默认键位
-            "mnemic_odyssey"//分类文字
-    );
-
-    //释放技能：忆如泉涌
-    public static final KeyMapping MEMORY_TORRENT = new KeyMapping(
-            "key.mnemic_odyssey.memory_torrent",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_V,
+            GLFW.GLFW_KEY_N,
             "mnemic_odyssey"
     );
 }
