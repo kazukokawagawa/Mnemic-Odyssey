@@ -18,6 +18,7 @@ public class ModKeyBindings {
         public static void registerKeys(RegisterKeyMappingsEvent event) {
             event.register(OPEN_CODEX_GUI);
             event.register(MEMORY_TORRENT);
+            event.register(OPEN_SETTINGS);
         }
     }
 
@@ -34,6 +35,14 @@ public class ModKeyBindings {
             "key.mnemic_odyssey.memory_torrent",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_V,
+            "mnemic_odyssey"
+    );
+
+    //打开设置菜单
+    public static final KeyMapping OPEN_SETTINGS = new KeyMapping(
+            "key.mnemic_odyssey.open_settings",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_N,
             "mnemic_odyssey"
     );
 }

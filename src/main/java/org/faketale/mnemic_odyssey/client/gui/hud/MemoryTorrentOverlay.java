@@ -16,8 +16,8 @@ import org.faketale.mnemic_odyssey.util.ModUtils;
 public class MemoryTorrentOverlay {
     private static final ResourceLocation BAR_TEXTURE = ResourceLocation.fromNamespaceAndPath(MnemicOdyssey.MODID, "textures/gui/memory_torrent.png");
     private static final ResourceLocation BAR_TEXTURE_2 = ResourceLocation.fromNamespaceAndPath(MnemicOdyssey.MODID, "textures/gui/memory_torrent_2.png");
-    private static final int barWidth = 100;
-    private static final int barHeight = 10;
+    public static final int barWidth = 100;
+    public static final int barHeight = 10;
     //private static final boolean shaking = true;//开大了是会摇晃的
 
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
@@ -41,42 +41,8 @@ public class MemoryTorrentOverlay {
         //计算位置及偏移
         int screenW = guiGraphics.guiWidth();
         int screenH = guiGraphics.guiHeight();
-        int globalDistant = 10;
-        int x = 0, y = 0;
-        switch(ModConfig.MemoryTorrentTabLocate.get()){
-            case UPPER ->{//上方
-                x = screenW / 2 - barWidth / 2;
-                y = globalDistant;
-            }
-            case UPPER_LEFT -> {//左上
-                x = globalDistant;
-                y = globalDistant;
-            }
-            case UPPER_RIGHT -> {//右上
-                x = screenW - globalDistant - barWidth;
-                y = globalDistant;
-            }
-            case LEFT -> {//左
-                x = globalDistant;
-                y = screenH / 2 - barHeight / 2;
-            }
-            case RIGHT -> {//右
-                x = screenW - globalDistant - barWidth;
-                y = screenH / 2 - barHeight / 2;
-            }
-//            case LOWER -> {//下方
-//                x = screenW / 2 - barHeight / 2;
-//                y = screenH - globalDistant;
-//            }
-            case LOWER_LEFT -> {//左下
-                x = globalDistant;
-                y = screenH - globalDistant * 2;
-            }
-            case LOWER_RIGHT -> {//右下
-                x = screenW - globalDistant - barWidth;
-                y = screenH - globalDistant * 2;
-            }
-        }
+        int x = (int) Math.round(ModConfig.MemoryTorrentPosX.get() * (screenW - barWidth));
+        int y = (int) Math.round(ModConfig.MemoryTorrentPosY.get() * (screenH - barHeight));
 
         //如果开启技能，随机摇晃
         if(player.getData(ModAttachments.MEMORY_TORRENT).active() && !mc.isPaused()){

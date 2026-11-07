@@ -8,6 +8,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.faketale.mnemic_odyssey.MnemicOdyssey;
 import org.faketale.mnemic_odyssey.client.gui.screen.MemoryCodexScreen;
+import org.faketale.mnemic_odyssey.client.gui.screen.ModSettingsScreen;
 import org.faketale.mnemic_odyssey.client.key.ModKeyBindings;
 import org.faketale.mnemic_odyssey.network.packet.MemoryTorrentKeyPayload;
 
@@ -21,6 +22,14 @@ public class ClientInputHandler {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null && mc.screen == null) {
                 mc.setScreen(new MemoryCodexScreen());
+            }
+        }
+
+        //打开设置菜单
+        if (ModKeyBindings.OPEN_SETTINGS.consumeClick()) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null && mc.screen == null) {
+                mc.setScreen(new ModSettingsScreen());
             }
         }
 
