@@ -25,6 +25,12 @@ public class ModNetworking {
                 ClientPayloadHandler::handleMemoryTorrentData
         );
 
+        registrar.playToClient(
+                org.faketale.mnemic_odyssey.network.packet.CompendiumSyncPayload.TYPE,
+                org.faketale.mnemic_odyssey.network.packet.CompendiumSyncPayload.STREAM_CODEC,
+                ClientPayloadHandler::handleCompendiumSync
+        );
+
         //注册 C2S 按键包 (客户端 -> 服务端)
         registrar.playToServer(
                 MemoryTorrentKeyPayload.TYPE,

@@ -7,7 +7,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.faketale.mnemic_odyssey.MnemicOdyssey;
-import org.faketale.mnemic_odyssey.client.gui.screen.MemoryCodexScreen;
+import org.faketale.mnemic_odyssey.client.gui.screen.MemoryCompendiumScreen;
 import org.faketale.mnemic_odyssey.client.gui.screen.ModSettingsScreen;
 import org.faketale.mnemic_odyssey.client.key.ModKeyBindings;
 import org.faketale.mnemic_odyssey.config.ModConfig;
@@ -32,8 +32,8 @@ public class ClientInputHandler {
         int key = event.getKey();
 
         //打开记忆图鉴
-        if (key == ModConfig.OpenCodexKey.get()) {
-            mc.setScreen(new MemoryCodexScreen());
+        if (key == ModConfig.OpenCompendiumKey.get()) {
+            mc.setScreen(new MemoryCompendiumScreen());
         }
         //忆如泉涌
         if (key == ModConfig.MemoryTorrentKey.get()) {

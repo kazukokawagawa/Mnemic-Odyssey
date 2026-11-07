@@ -48,7 +48,7 @@ public class MnemicOdysseyTabs {
     }).build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MnemicOdysseyTool = CREATIVE_MODE_TABS.register("mnemic_odyssey_tools", () -> CreativeModeTab.builder().title(Component.translatable("itemGroup.mnemic_odyssey.tools")).icon(() -> ModItems.TimeLens.get().getDefaultInstance()).displayItems((parameters, output) -> {
-        output.accept(ModItems.MemoryCodex.get());
+        output.accept(ModItems.MemoryCompendium.get());
         output.accept(ModItems.TimeLens.get());
     }).build());
 
