@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-// 1. 数据类
+// 数据类
 public record MemoryTorrentData(float energy, boolean active) {
     private static final float maxEnergy = 100;
 
@@ -37,7 +37,13 @@ public record MemoryTorrentData(float energy, boolean active) {
         return new MemoryTorrentData(this.energy, newActive);
     }
 
-    public static float getMaxEnergy(){
+    // 当前能量值是否已满
+    public boolean isFull() {
+        return energy >= maxEnergy;
+    }
+
+    // 获取最大能量值
+    public static float getMaxEnergy() {
         return maxEnergy;
     }
 }

@@ -1,5 +1,6 @@
 package org.faketale.mnemic_odyssey.client.gui.screen;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -30,8 +31,8 @@ public class HudPositionScreen extends Screen {
                 .bounds(width / 2 + 5, height - 30, 100, 20).build());
     }
 
-    private int barX() { return (int) Math.round(ModConfig.MemoryTorrentPosX.get() * (width - MemoryTorrentOverlay.barWidth)); }
-    private int barY() { return (int) Math.round(ModConfig.MemoryTorrentPosY.get() * (height - MemoryTorrentOverlay.barHeight)); }
+    private int barX() { return (int) Math.round(ModConfig.MemoryTorrentPosX.get() * (width - this.getBarWidth())); }
+    private int barY() { return (int) Math.round(ModConfig.MemoryTorrentPosY.get() * (height - this.getBarHeight())); }
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
@@ -41,15 +42,15 @@ public class HudPositionScreen extends Screen {
         if (!ModConfig.MemoryTorrentShow.get()) MemoryTorrentOverlay.renderPreview(g, barX(), barY());
         int x = barX(), y = barY();
         int color = dragging ? 0xFFFFFF55 : 0xFFFFFFFF;
-        g.renderOutline(x - 2, y - 2, MemoryTorrentOverlay.barWidth + 4, MemoryTorrentOverlay.barHeight + 4, color);
+        g.renderOutline(x - 2, y - 2, this.getBarWidth() + 4, this.getBarHeight() + 4, color);
     }
 
     @Override
     public boolean mouseClicked(double mx, double my, int button) {
         if (super.mouseClicked(mx, my, button)) return true;
         int x = barX(), y = barY();
-        if (button == 0 && mx >= x - 2 && mx <= x + MemoryTorrentOverlay.barWidth + 2
-                && my >= y - 2 && my <= y + MemoryTorrentOverlay.barHeight + 2) {
+        if (button == 0 && mx >= x - 2 && mx <= x + this.getBarWidth() + 2
+                && my >= y - 2 && my <= y + this.getBarHeight() + 2) {
             dragging = true;
             grabX = mx - x;
             grabY = my - y;
@@ -61,8 +62,8 @@ public class HudPositionScreen extends Screen {
     @Override
     public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
         if (dragging) {
-            int rangeX = Math.max(1, width - MemoryTorrentOverlay.barWidth);
-            int rangeY = Math.max(1, height - MemoryTorrentOverlay.barHeight);
+            int rangeX = Math.max(1, width - this.getBarWidth());
+            int rangeY = Math.max(1, height - this.getBarHeight());
             ModConfig.MemoryTorrentPosX.set(Math.max(0.0, Math.min(1.0, (mx - grabX) / rangeX)));
             ModConfig.MemoryTorrentPosY.set(Math.max(0.0, Math.min(1.0, (my - grabY) / rangeY)));
             return true;
@@ -83,5 +84,13 @@ public class HudPositionScreen extends Screen {
     @Override
     public void onClose() {
         this.minecraft.setScreen(parent);
+    }
+
+    public int getBarWidth() {
+        return Minecraft.getInstance().getGuiSprites().getSprite(MemoryTorrentOverlay.MEMORY_TORRENT).contents().width();
+    }
+
+    public int getBarHeight() {
+        return Minecraft.getInstance().getGuiSprites().getSprite(MemoryTorrentOverlay.MEMORY_TORRENT).contents().height();
     }
 }

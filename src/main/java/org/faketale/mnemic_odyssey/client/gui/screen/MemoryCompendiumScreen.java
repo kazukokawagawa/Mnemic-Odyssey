@@ -36,6 +36,22 @@ import org.faketale.mnemic_odyssey.compendium.*;
 import java.util.*;
 
 /*
+ * GUI示意图
+ * —————————————————————————————————————————————
+ * |                     | [icon][icon][icon]  |---┐ --->[Tags]
+ * |                     | [icon][icon][icon]  |---┘
+ * |                     | [icon][icon][icon]  |---┐
+ * |                     |                     |---┘
+ * |        [Info]       |        [List]       |
+ * |                     |                     |
+ * |                     |                     |
+ * |                     |                     |
+ * |                     |                     |
+ * |                     |                     |
+ * |                     |                     |
+ * —————————————————————————————————————————————
+ * */
+/*
  * 左：详情区；右：已解锁条目列表（3 列，可滚动）；最右侧：四个门类标签
  */
 public class MemoryCompendiumScreen extends Screen {

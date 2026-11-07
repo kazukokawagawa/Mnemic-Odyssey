@@ -8,7 +8,7 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.faketale.mnemic_odyssey.MnemicOdyssey;
 import org.faketale.mnemic_odyssey.client.gui.hud.MemoryTorrentOverlay;
 
-@EventBusSubscriber(modid = MnemicOdyssey.MODID, /*bus = EventBusSubscriber.Bus.GAME,*/ value = Dist.CLIENT)
+@EventBusSubscriber(modid = MnemicOdyssey.MODID, value = Dist.CLIENT)
 public class RenderGuiHandler {
     private static final MemoryTorrentOverlay MEMORY_TORRENT_OVERLAY = new MemoryTorrentOverlay();
 
@@ -18,6 +18,6 @@ public class RenderGuiHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.options.hideGui || mc.player == null) return;
 
-        MEMORY_TORRENT_OVERLAY.render(event.getGuiGraphics(), event.getPartialTick());
+        MEMORY_TORRENT_OVERLAY.render(event.getGuiGraphics());
     }
 }
