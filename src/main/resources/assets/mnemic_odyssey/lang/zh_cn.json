@@ -13,7 +13,7 @@
   "effect.mnemic_odyssey.memory_chaos" : "记忆混乱",
   "key.mnemic_odyssey.open_memory_codex": "打开记忆图鉴",
   "key.mnemic_odyssey.memory_torrent": "忆如泉涌",
-  "message.mnemic_odyssey.welcome": "欢迎来到寻忆之旅！想要加入我们的 discord 服务器？请访问 114514.com",
+  "message.mnemic_odyssey.welcome": "欢迎来到寻忆之旅！想要加入我们的 discord 服务器？请访问 https://1s.nz/mod-discord",
   "gamerule.keepMemoryTorrent": "死亡后保留忆如泉涌条",
   "gamerule.keepMemoryTorrent.description": "开启后，玩家死亡重生时将保留忆如泉涌条的能量值和开启状态。",
   "commands.memorytorrent.set.success.single": "已将 %s 的忆如泉涌能量设为 %.1f",
