@@ -19,6 +19,14 @@ public class ClientPayloadHandler {
         });
     }
 
+    public static void handleCraftHistory(final org.faketale.mnemic_odyssey.network.packet.CraftHistoryPayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            var history = context.player().getData(ModAttachments.CRAFT_HISTORY);
+            history.clear();
+            for (var entry : payload.entries()) history.put(entry.item(), new java.util.ArrayList<>(entry.recipes()));
+        });
+    }
+
     //更新本地 Attachment
     public static void handleMemoryTorrentData(final EnergySyncPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {

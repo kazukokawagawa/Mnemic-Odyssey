@@ -74,6 +74,8 @@
   "gui.mnemic_odyssey.compendium.special": "特殊机制",
   "gui.mnemic_odyssey.compendium.faction": "阵容：%s",
   "gui.mnemic_odyssey.compendium.faction.neutral": "中立",
+  "gui.mnemic_odyssey.compendium.faction.materialist": "唯物",
+  "gui.mnemic_odyssey.compendium.faction.idealist": "唯心",
   "gui.mnemic_odyssey.compendium.recipes": "配方",
   "gui.mnemic_odyssey.compendium.no_recipe": "暂无配方记录",
   "compendium.mnemic_odyssey.perk.magma_immune": "不会在岩浆块上受到伤害",

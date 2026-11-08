@@ -52,6 +52,24 @@ public class CompendiumEvents {
     private static final String RAMPAGE_TAG = "mnemic_rampage";
     private static final String RAMPAGE_UNTIL = "mnemic_rampage_until";
     private static final Map<UUID, Long> LAST_INTERACT = new ConcurrentHashMap<>();
+    private record Mining(BlockPos pos, long start) {}
+    private static final Map<UUID, Mining> MINING = new ConcurrentHashMap<>();
+
+    @SubscribeEvent
+    public static void onMiningStart(PlayerInteractEvent.LeftClickBlock event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        switch (event.getAction()) {
+            case START -> MINING.put(player.getUUID(), new Mining(event.getPos().immutable(), player.level().getGameTime()));
+            case ABORT -> MINING.remove(player.getUUID());
+            default -> { }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        MINING.remove(event.getEntity().getUUID());
+        LAST_INTERACT.remove(event.getEntity().getUUID());
+    }
 
     /** 每个玩家的互动经验冷却，防止连点刷等级/经验球 */
     private static boolean cooldownOk(ServerPlayer p, int ticks) {
@@ -68,6 +86,11 @@ public class CompendiumEvents {
     public static void onBreak(BlockEvent.BreakEvent event) {
         if (!(event.getPlayer() instanceof ServerPlayer p) || p.isCreative()) return;
         Block b = event.getState().getBlock();
+        Mining mining = MINING.remove(p.getUUID());
+        if (mining != null && mining.pos().equals(event.getPos())) {
+            long ticks = Math.max(1, p.level().getGameTime() - mining.start() + 1);
+            org.faketale.mnemic_odyssey.ability.MemoryTorrent.charge(p, Math.min(30f, ticks / 20f));
+        }
         if (!CompendiumLogic.blockAllowed(b)) return;
         CompendiumLogic.touch(p, CompendiumCategory.BLOCK, CompendiumLogic.blockId(b), 1, true);
     }
@@ -75,20 +98,10 @@ public class CompendiumEvents {
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (!(event.getEntity() instanceof ServerPlayer p) || event.getHand() != InteractionHand.MAIN_HAND) return;
-        if (p.isSecondaryUseActive() && !p.getMainHandItem().isEmpty()) return;
         BlockState s = p.level().getBlockState(event.getPos());
-        if (!CompendiumLogic.blockAllowed(s.getBlock()) || !isInteractable(p, s, event.getPos())) return;
+        if (!CompendiumLogic.blockAllowed(s.getBlock())) return;
         if (!cooldownOk(p, 10)) return;
         CompendiumLogic.touch(p, CompendiumCategory.BLOCK, CompendiumLogic.blockId(s.getBlock()), 1, true);
-    }
-
-    private static boolean isInteractable(ServerPlayer p, BlockState s, BlockPos pos) {
-        return s.getMenuProvider(p.level(), pos) != null
-                || p.level().getBlockEntity(pos) instanceof MenuProvider
-                || s.is(BlockTags.DOORS) || s.is(BlockTags.TRAPDOORS) || s.is(BlockTags.FENCE_GATES)
-                || s.is(BlockTags.BUTTONS) || s.is(BlockTags.BEDS) || s.is(Blocks.LEVER)
-                || s.is(Blocks.NOTE_BLOCK) || s.is(Blocks.JUKEBOX) || s.is(Blocks.CAKE)
-                || s.is(Blocks.ENCHANTING_TABLE) || s.is(Blocks.CRAFTING_TABLE) || s.is(Blocks.ANVIL);
     }
 
     /** 方块 10 级：概率双倍掉落 */
@@ -119,8 +132,17 @@ public class CompendiumEvents {
     // ---------------- 生物 / 头目 ----------------
 
     @SubscribeEvent
+    public static void onEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
+        if (event.getTarget().getTags().contains(RAMPAGE_TAG)) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         if (!(event.getEntity() instanceof ServerPlayer p) || event.getHand() != InteractionHand.MAIN_HAND) return;
+        if (event.getTarget().getTags().contains(RAMPAGE_TAG)) {
+            event.setCanceled(true);
+            return;
+        }
         CompendiumCategory cat = CompendiumLogic.classify(event.getTarget());
         if (cat == null || !cooldownOk(p, 20)) return;
         CompendiumLogic.touch(p, cat, CompendiumLogic.entityId(event.getTarget().getType()), 1, true);
@@ -216,7 +238,7 @@ public class CompendiumEvents {
         if (t % 20 == 0) {
             for (BlockPerk perk : CompendiumLogic.activePerks(p)) {
                 if (perk.effect != null) {
-                    p.addEffect(new MobEffectInstance(perk.effect, perk.effect == net.minecraft.world.effect.MobEffects.NIGHT_VISION ? 260 : 60,
+                    p.addEffect(new MobEffectInstance(perk.effect, 25,
                             perk.amplifier, true, false, true));
                 }
             }
@@ -245,7 +267,10 @@ public class CompendiumEvents {
     public static void onMobTick(EntityTickEvent.Pre event) {
         if (!(event.getEntity() instanceof Mob m) || m.level().isClientSide) return;
         if (m.getTags().isEmpty() || !m.getTags().contains(RAMPAGE_TAG)) return;
-        if (m.level().getGameTime() > m.getPersistentData().getLong(RAMPAGE_UNTIL)) {
+        if (m.level().getGameTime() <= m.getPersistentData().getLong(RAMPAGE_UNTIL)) {
+            m.getNavigation().stop();
+            m.setDeltaMovement(0, 0, 0);
+        } else {
             m.setNoAi(false);
             m.removeTag(RAMPAGE_TAG);
             m.getPersistentData().remove(RAMPAGE_UNTIL);

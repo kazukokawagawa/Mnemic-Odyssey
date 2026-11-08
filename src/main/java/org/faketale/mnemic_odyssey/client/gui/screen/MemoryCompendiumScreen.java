@@ -354,14 +354,9 @@ public class MemoryCompendiumScreen extends Screen {
         selected = id;
         recipeCache = List.of();
         if (currentTab == CompendiumCategory.ITEM && Minecraft.getInstance().level != null) {
-            var item = BuiltInRegistries.ITEM.get(id);
-            var access = Minecraft.getInstance().level.registryAccess();
             List<RecipeHolder<?>> found = new ArrayList<>();
-            for (RecipeHolder<?> h : Minecraft.getInstance().level.getRecipeManager().getRecipes()) {
-                if (h.value().getResultItem(access).is(item)) {
-                    found.add(h);
-                    if (found.size() >= 2) break;
-                }
+            for (ResourceLocation recipeId : Minecraft.getInstance().player.getData(ModAttachments.CRAFT_HISTORY).getOrDefault(id, List.of())) {
+                Minecraft.getInstance().level.getRecipeManager().byKey(recipeId).ifPresent(found::add);
             }
             recipeCache = found;
         }

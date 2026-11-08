@@ -23,6 +23,21 @@ public class ModAttachments {
                     .copyOnDeath()
                     .build());
 
+    public static final Supplier<AttachmentType<java.util.Map<net.minecraft.resources.ResourceLocation, java.util.List<net.minecraft.resources.ResourceLocation>>>> CRAFT_HISTORY = ATTACHMENTS
+            .register("craft_history", () -> AttachmentType.<java.util.Map<net.minecraft.resources.ResourceLocation, java.util.List<net.minecraft.resources.ResourceLocation>>>builder(() -> new java.util.HashMap<>())
+                    .serialize(Codec.unboundedMap(net.minecraft.resources.ResourceLocation.CODEC, net.minecraft.resources.ResourceLocation.CODEC.listOf())
+                            .xmap(java.util.HashMap::new, m -> m))
+                    .copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<Integer>> TORRENT_READY_DELAY = ATTACHMENTS
+            .register("torrent_ready_delay", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build());
+    public static final Supplier<AttachmentType<Integer>> TORRENT_DURATION = ATTACHMENTS
+            .register("torrent_duration", () -> AttachmentType.builder(() -> 600).serialize(Codec.INT).build());
+
+    // Remaining immunity in player ticks; persists across logout.
+    public static final Supplier<AttachmentType<Integer>> CHAOS_IMMUNITY = ATTACHMENTS
+            .register("chaos_immunity", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).copyOnDeath().build());
+
     //忆如泉涌技能充能进度
 //    public static final Supplier<AttachmentType<Float>> MEMORY_TORRENT = ATTACHMENT_TYPES
 //            .register("memory_torrent", () -> AttachmentType.builder(() -> 0.0f).serialize(Codec.FLOAT).build());

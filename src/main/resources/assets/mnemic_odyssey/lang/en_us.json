@@ -74,6 +74,8 @@
   "gui.mnemic_odyssey.compendium.special": "Special mechanics",
   "gui.mnemic_odyssey.compendium.faction": "Faction: %s",
   "gui.mnemic_odyssey.compendium.faction.neutral": "Neutral",
+  "gui.mnemic_odyssey.compendium.faction.materialist": "Materialist",
+  "gui.mnemic_odyssey.compendium.faction.idealist": "Idealist",
   "gui.mnemic_odyssey.compendium.recipes": "Recipes",
   "gui.mnemic_odyssey.compendium.no_recipe": "No recipes recorded",
   "compendium.mnemic_odyssey.perk.magma_immune": "No damage from magma blocks",
