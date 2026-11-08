@@ -56,6 +56,9 @@ import java.util.*;
  */
 public class MemoryCompendiumScreen extends Screen {
     private static final int TAB_H = 22, CELL_H = 27;
+    private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(
+            MnemicOdyssey.MODID, "textures/gui/memory_codex/memory_codex.png");
+    private static final int TEXTURE_WIDTH = 188, TEXTURE_HEIGHT = 148;
 
     public MemoryCompendiumScreen() {
         super(Component.translatable("item.mnemic_odyssey.memory_compendium"));
@@ -63,7 +66,7 @@ public class MemoryCompendiumScreen extends Screen {
 
     protected int globalWidth, globalHeight, leftPos, topPos;
     protected int infoX, infoW, listX, listW, cellW, visibleRows;
-    private int columns, contentTop, contentBottom, tabsTop;
+    private int columns, contentTop, contentBottom, tabsTop, tabsX, tabsWidth;
     private int detailScroll, detailMaxScroll;
 
     private CompendiumCategory currentTab = CompendiumCategory.BLOCK;
@@ -86,16 +89,20 @@ public class MemoryCompendiumScreen extends Screen {
         globalHeight = Math.max(1, Math.min(460, this.height - 16));
         leftPos = (this.width - globalWidth) / 2;
         topPos = (this.height - globalHeight) / 2;
-        int split = globalWidth * 53 / 100;
-        infoX = leftPos + 14;
-        infoW = Math.max(20, split - 22);
+        int split = globalWidth / 2;
+        int marginX = Math.max(10, globalWidth * 13 / TEXTURE_WIDTH);
+        int marginY = Math.max(5, globalHeight * 7 / TEXTURE_HEIGHT);
+        infoX = leftPos + marginX;
+        infoW = Math.max(20, split - marginX - 8);
         listX = leftPos + split + 8;
-        listW = Math.max(20, globalWidth - split - 22);
+        listW = Math.max(20, globalWidth - split - marginX - 8);
         columns = Math.max(1, Math.min(3, listW / 100));
         cellW = listW / columns;
-        tabsTop = topPos + 29;
+        tabsX = leftPos + marginX;
+        tabsWidth = globalWidth - 2 * marginX;
+        tabsTop = topPos + marginY + 20;
         contentTop = tabsTop + TAB_H + 7;
-        contentBottom = topPos + globalHeight - 12;
+        contentBottom = topPos + globalHeight - marginY;
         visibleRows = Math.max(1, (contentBottom - contentTop) / CELL_H);
         detailScroll = 0;
         refreshEntries(true);
@@ -123,17 +130,14 @@ public class MemoryCompendiumScreen extends Screen {
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         hoverStack = ItemStack.EMPTY;
         g.fill(0, 0, this.width, this.height, 0xB0000000);
-        // A leather cover, inset pages and a narrow central binding.
-        g.fill(leftPos + 3, topPos + 4, leftPos + globalWidth + 3, topPos + globalHeight + 4, 0x66000000);
-        g.fill(leftPos, topPos, leftPos + globalWidth, topPos + globalHeight, 0xFF493329);
-        g.fill(leftPos + 3, topPos + 3, leftPos + globalWidth - 3, topPos + globalHeight - 3, 0xFF241E1A);
-        g.fill(leftPos + 5, topPos + 5, leftPos + globalWidth - 5, topPos + 25, 0xFF382D24);
-        g.drawString(font, title, leftPos + 13, topPos + 10, 0xFFF4DDA4, false);
+        g.blit(BACKGROUND, leftPos, topPos, globalWidth, globalHeight,
+                0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        g.fill(tabsX, tabsTop - 20, tabsX + tabsWidth, tabsTop - 2, 0xD0382D24);
+        g.drawString(font, title, tabsX + 5, tabsTop - 15, 0xFFF4DDA4, false);
         String count = Integer.toString(entries.size());
-        g.drawString(font, count, leftPos + globalWidth - 14 - font.width(count), topPos + 10, 0xFFB8A17B, false);
-        g.fill(infoX - 5, contentTop - 4, infoX + infoW + 5, contentBottom + 4, 0xFF302821);
-        g.fill(listX - 5, contentTop - 4, listX + listW + 5, contentBottom + 4, 0xFF302821);
-        g.fill(infoX + infoW + 7, contentTop - 4, infoX + infoW + 8, contentBottom + 4, 0xFF80694B);
+        g.drawString(font, count, tabsX + tabsWidth - 5 - font.width(count), tabsTop - 15, 0xFFB8A17B, false);
+        g.fill(infoX - 4, contentTop - 4, infoX + infoW + 4, contentBottom, 0xD0302821);
+        g.fill(listX - 4, contentTop - 4, listX + listW + 4, contentBottom, 0xD0302821);
 
         renderTabs(g, mouseX, mouseY);
         renderList(g, mouseX, mouseY);
@@ -156,10 +160,10 @@ public class MemoryCompendiumScreen extends Screen {
 
     private void renderTabs(GuiGraphics g, int mx, int my) {
         CompendiumCategory[] tabs = CompendiumCategory.values();
-        int tabWidth = (globalWidth - 20) / tabs.length;
+        int tabWidth = tabsWidth / tabs.length;
         for (int i = 0; i < tabs.length; i++) {
             boolean active = tabs[i] == currentTab;
-            int x = leftPos + 10 + i * tabWidth;
+            int x = tabsX + i * tabWidth;
             boolean hover = mx >= x && mx < x + tabWidth - 3 && my >= tabsTop && my < tabsTop + TAB_H;
             g.fill(x, tabsTop, x + tabWidth - 3, tabsTop + TAB_H, active ? 0xFF8E7047 : hover ? 0xFF65513B : 0xFF493A2D);
             if (active) g.fill(x, tabsTop + TAB_H - 2, x + tabWidth - 3, tabsTop + TAB_H, 0xFFE8C27A);
@@ -412,9 +416,9 @@ public class MemoryCompendiumScreen extends Screen {
     public boolean mouseClicked(double mx, double my, int button) {
         if (button != 0) return super.mouseClicked(mx, my, button);
         CompendiumCategory[] tabs = CompendiumCategory.values();
-        int tabWidth = (globalWidth - 20) / tabs.length;
+        int tabWidth = tabsWidth / tabs.length;
         for (int i = 0; i < tabs.length; i++) {
-            int x = leftPos + 10 + i * tabWidth;
+            int x = tabsX + i * tabWidth;
             if (mx >= x && mx < x + tabWidth - 3 && my >= tabsTop && my < tabsTop + TAB_H) {
                 if (currentTab != tabs[i]) {
                     currentTab = tabs[i];
