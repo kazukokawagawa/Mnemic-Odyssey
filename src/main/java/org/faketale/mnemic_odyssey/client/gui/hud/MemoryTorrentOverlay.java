@@ -30,15 +30,24 @@ public class MemoryTorrentOverlay {
         TextureAtlasSprite background = mc.getGuiSprites().getSprite(backgroundRl);
         int width = background.contents().width();
         int height = background.contents().height();
-        int x = (int) Math.round(ModConfig.MemoryTorrentPosX.get() * (guiGraphics.guiWidth() - width));
-        int y = (int) Math.round(ModConfig.MemoryTorrentPosY.get() * (guiGraphics.guiHeight() - height));
+        float scale = ModConfig.MemoryTorrentScale.get().floatValue();
+        TextureAtlasSprite normalBackground = mc.getGuiSprites().getSprite(MEMORY_TORRENT);
+        int layoutWidth = normalBackground.contents().width();
+        int layoutHeight = normalBackground.contents().height();
+        int scaledWidth = scaledSize(layoutWidth);
+        int scaledHeight = scaledSize(layoutHeight);
+        int x = (int) Math.round(ModConfig.MemoryTorrentPosX.get() * Math.max(0, guiGraphics.guiWidth() - scaledWidth));
+        int y = (int) Math.round(ModConfig.MemoryTorrentPosY.get() * Math.max(0, guiGraphics.guiHeight() - scaledHeight));
 
         if (data.active() && !mc.isPaused()) {
             x += ModUtils.random.nextBoolean() ? 1 : -1;
             y += ModUtils.random.nextBoolean() ? 1 : -1;
         }
 
-        guiGraphics.blitSprite(backgroundRl, x, y, width, height);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(x, y, 0);
+        guiGraphics.pose().scale(scale, scale, 1);
+        guiGraphics.blitSprite(backgroundRl, (layoutWidth - width) / 2, (layoutHeight - height) / 2, width, height);
 
         if (!isFull) {
             TextureAtlasSprite bar = mc.getGuiSprites().getSprite(MEMORY_TORRENT_BAR);
@@ -47,16 +56,26 @@ public class MemoryTorrentOverlay {
             float progress = Math.clamp(data.energy() / MemoryTorrentData.getMaxEnergy(), 0.0F, 1.0F);
             int progressWidth = Math.round(barWidth * progress);
             if (progressWidth > 0) {
-                int barX = x + (width - barWidth) / 2;
-                int barY = y + (height - barHeight) / 2;
+                int barX = (width - barWidth) / 2;
+                int barY = (height - barHeight) / 2;
                 guiGraphics.blitSprite(MEMORY_TORRENT_BAR, barWidth, barHeight, 0, 0, barX, barY, progressWidth, barHeight);
             }
         }
+        guiGraphics.pose().popPose();
     }
 
-    /** 仅绘制空条（设置界面中条被隐藏时用来预览位置） */
+    public static int scaledSize(int original) {
+        return (int) Math.ceil(original * ModConfig.MemoryTorrentScale.get());
+    }
+
+    /** 设置界面的缩放预览。 */
     public static void renderPreview(GuiGraphics guiGraphics, int x, int y) {
         TextureAtlasSprite background = Minecraft.getInstance().getGuiSprites().getSprite(MEMORY_TORRENT);
-        guiGraphics.blitSprite(MEMORY_TORRENT, x, y, background.contents().width(), background.contents().height());
+        float scale = ModConfig.MemoryTorrentScale.get().floatValue();
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(x, y, 0);
+        guiGraphics.pose().scale(scale, scale, 1);
+        guiGraphics.blitSprite(MEMORY_TORRENT, 0, 0, background.contents().width(), background.contents().height());
+        guiGraphics.pose().popPose();
     }
 }

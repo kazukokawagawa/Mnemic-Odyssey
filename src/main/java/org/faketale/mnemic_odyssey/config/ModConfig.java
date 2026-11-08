@@ -23,6 +23,9 @@ public class ModConfig {
     public static final ModConfigSpec.DoubleValue MemoryTorrentPosY =
             BUILDER.comment("Vertical position of memory torrent bar (0 = top, 1 = bottom)")
                     .defineInRange("Memory Torrent Bar Y", 0.03, 0.0, 1.0);
+    public static final ModConfigSpec.DoubleValue MemoryTorrentScale =
+            BUILDER.comment("Memory torrent bar scale (1.0 = original size)")
+                    .defineInRange("Memory Torrent Bar Scale", 1.0, 0.5, 2.0);
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     @SubscribeEvent
