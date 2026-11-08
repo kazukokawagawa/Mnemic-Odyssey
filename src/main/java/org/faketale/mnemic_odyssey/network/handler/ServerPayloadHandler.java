@@ -20,10 +20,13 @@ public class ServerPayloadHandler {
             MemoryTorrentData data = player.getData(ModAttachments.MEMORY_TORRENT.get());
 
             // 只有能量满 100 且当前未开启时，才能开启
-            if (!data.active() && data.energy() >= MemoryTorrentData.getMaxEnergy()) {
+            if (!data.active() && data.energy() >= MemoryTorrentData.getMaxEnergy() && player.getData(ModAttachments.TORRENT_READY_DELAY) <= 0) {
                 // 修改服务端数据 (开启状态)
                 MemoryTorrentData newData = new MemoryTorrentData(data.energy(), true);
                 player.setData(ModAttachments.MEMORY_TORRENT.get(), newData);
+                player.removeEffect(org.faketale.mnemic_odyssey.effect.ModEffects.MEMORY_CHAOS);
+                player.setData(ModAttachments.CHAOS_IMMUNITY, 800);
+                player.setData(ModAttachments.TORRENT_DURATION, org.faketale.mnemic_odyssey.compendium.CompendiumLogic.hasCompendium(player) ? 600 : 300);
 
                 // 给触发者发送音效
                 // 在服务端对 ServerPlayer 使用此方法，音效只发给该玩家本人

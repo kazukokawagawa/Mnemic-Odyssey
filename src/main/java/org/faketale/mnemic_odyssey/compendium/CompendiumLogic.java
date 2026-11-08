@@ -36,8 +36,9 @@ public final class CompendiumLogic {
     public static final float DAMAGE_BONUS = 0.15f;         // 5 级（生物/头目）
     public static final float ARMOR_PIERCE_CHANCE = 0.25f;  // 10 级（生物/头目）
 
-    /** 阵容表：物品 id -> 阵容名（lang 键后缀）。未登记的物品为中立。 */
-    private static final Map<ResourceLocation, String> FACTIONS = new HashMap<>();
+    /** Faction tags are datapack-extensible. Unassigned items remain neutral. */
+    private static final net.minecraft.tags.TagKey<Item> MATERIALIST = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MnemicOdyssey.MODID, "faction/materialist"));
+    private static final net.minecraft.tags.TagKey<Item> IDEALIST = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MnemicOdyssey.MODID, "faction/idealist"));
 
     public static int xpNeeded(int level) {
         return 3 + level * 2;
@@ -76,7 +77,8 @@ public final class CompendiumLogic {
     }
 
     public static Component faction(ResourceLocation itemId) {
-        String f = FACTIONS.getOrDefault(itemId, "neutral");
+        ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(itemId));
+        String f = stack.is(MATERIALIST) ? "materialist" : stack.is(IDEALIST) ? "idealist" : "neutral";
         return Component.translatable("gui.mnemic_odyssey.compendium.faction." + f);
     }
 

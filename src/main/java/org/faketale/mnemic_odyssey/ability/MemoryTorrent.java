@@ -1,39 +1,21 @@
 package org.faketale.mnemic_odyssey.ability;
 
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.faketale.mnemic_odyssey.capability.ModAttachments;
 import org.faketale.mnemic_odyssey.network.MemoryTorrentData;
+import org.faketale.mnemic_odyssey.network.packet.EnergySyncPayload;
 
-public class MemoryTorrent {
-//    //private static float currentEnergy = 0;
-//    private static float maxEnergy = 100;
-//    //private static boolean active = false;
-//
-////    public static void setEnergy(Player player, float newVar){
-////        //return Math.clamp(var, 0.0f, maxEnergy);
-////        //player.setData(ModAttachments.MEMORY_TORRENT_DATA, Math.clamp(newVar, 0.0f, maxEnergy));
-////        player.setData(ModAttachments.MEMORY_TORRENT_DATA, new MemoryTorrentData(
-////                newVar,
-////                player.getData(ModAttachments.MEMORY_TORRENT_DATA).active()));
-////    }
-//
-////    public static void setActive(boolean var){
-////        active = var;
-////    }
-//
-//    public static void setMaxEnergy(float var){
-//        maxEnergy = var;
-//    }
-//
-////    public static float getEnergy(Player player){
-////        return player.getData(ModAttachments.MEMORY_TORRENT_DATA.get()).energy();
-////    }
-//
-////    public static boolean isActive(){
-////        return active;
-////    }
-//
-//    public static float getMaxEnergy(){
-//        return maxEnergy;
-//    }
+/** Server-authoritative charging; one energy per damage point or second of mining. */
+public final class MemoryTorrent {
+    private MemoryTorrent() {}
+
+    public static void charge(ServerPlayer player, float amount) {
+        MemoryTorrentData data = player.getData(ModAttachments.MEMORY_TORRENT);
+        if (data.active() || amount <= 0 || !Float.isFinite(amount)) return;
+        MemoryTorrentData updated = data.addEnergy(amount);
+        if (!data.isFull() && updated.isFull()) player.setData(ModAttachments.TORRENT_READY_DELAY, 30);
+        player.setData(ModAttachments.MEMORY_TORRENT, updated);
+        PacketDistributor.sendToPlayer(player, new EnergySyncPayload(updated));
+    }
 }

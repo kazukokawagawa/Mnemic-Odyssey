@@ -36,10 +36,29 @@ import org.faketale.mnemic_odyssey.compendium.*;
 import java.util.*;
 
 /*
+ * GUI示意图
+ * —————————————————————————————————————————————
+ * |                     | [icon][icon][icon]  |---┐ --->[Tags]
+ * |                     | [icon][icon][icon]  |---┘
+ * |                     | [icon][icon][icon]  |---┐
+ * |                     |                     |---┘
+ * |        [Info]       |        [List]       |
+ * |                     |                     |
+ * |                     |                     |
+ * |                     |                     |
+ * |                     |                     |
+ * |                     |                     |
+ * |                     |                     |
+ * —————————————————————————————————————————————
+ * */
+/*
  * 左：详情区；右：已解锁条目列表（3 列，可滚动）；最右侧：四个门类标签
  */
 public class MemoryCompendiumScreen extends Screen {
-    private static final int TAB_W = 46, TAB_H = 26, CELL_H = 24, COLS = 3;
+    private static final int TAB_H = 22, CELL_H = 27;
+    private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(
+            MnemicOdyssey.MODID, "textures/gui/memory_codex/memory_codex.png");
+    private static final int TEXTURE_WIDTH = 188, TEXTURE_HEIGHT = 148;
 
     public MemoryCompendiumScreen() {
         super(Component.translatable("item.mnemic_odyssey.memory_compendium"));
@@ -47,6 +66,8 @@ public class MemoryCompendiumScreen extends Screen {
 
     protected int globalWidth, globalHeight, leftPos, topPos;
     protected int infoX, infoW, listX, listW, cellW, visibleRows;
+    private int columns, contentTop, contentBottom, tabsTop, tabsX, tabsWidth;
+    private int detailScroll, detailMaxScroll;
 
     private CompendiumCategory currentTab = CompendiumCategory.BLOCK;
     private ResourceLocation selected = null;
@@ -64,16 +85,26 @@ public class MemoryCompendiumScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        globalWidth = Math.min((int) (this.width * 0.85f), this.width - 2 * (TAB_W + 4));
-        globalHeight = (int) (this.height * 0.85f);
+        globalWidth = Math.max(1, Math.min(700, this.width - 16));
+        globalHeight = Math.max(1, Math.min(460, this.height - 16));
         leftPos = (this.width - globalWidth) / 2;
         topPos = (this.height - globalHeight) / 2;
-        infoX = leftPos + 8;
-        infoW = globalWidth / 2 - 16;
-        listX = leftPos + globalWidth / 2 + 5;
-        listW = globalWidth / 2 - 10;
-        cellW = listW / COLS;
-        visibleRows = Math.max(1, (globalHeight - 10) / CELL_H);
+        int split = globalWidth / 2;
+        int marginX = Math.max(10, globalWidth * 13 / TEXTURE_WIDTH);
+        int marginY = Math.max(5, globalHeight * 7 / TEXTURE_HEIGHT);
+        infoX = leftPos + marginX;
+        infoW = Math.max(20, split - marginX - 8);
+        listX = leftPos + split + 8;
+        listW = Math.max(20, globalWidth - split - marginX - 8);
+        columns = Math.max(1, Math.min(3, listW / 100));
+        cellW = listW / columns;
+        tabsX = leftPos + marginX;
+        tabsWidth = globalWidth - 2 * marginX;
+        tabsTop = topPos + marginY + 20;
+        contentTop = tabsTop + TAB_H + 7;
+        contentBottom = topPos + globalHeight - marginY;
+        visibleRows = Math.max(1, (contentBottom - contentTop) / CELL_H);
+        detailScroll = 0;
         refreshEntries(true);
     }
 
@@ -88,7 +119,7 @@ public class MemoryCompendiumScreen extends Screen {
         cachedSize = m.size();
         entries = new ArrayList<>(m.keySet());
         entries.sort(Comparator.comparing(id -> CompendiumLogic.displayName(currentTab, id).getString()));
-        int maxScroll = Math.max(0, (entries.size() + COLS - 1) / COLS - visibleRows);
+        int maxScroll = Math.max(0, (entries.size() + columns - 1) / columns - visibleRows);
         scroll = Math.min(scroll, maxScroll);
         if (selected != null && !m.containsKey(selected)) selected = null;
     }
@@ -98,58 +129,89 @@ public class MemoryCompendiumScreen extends Screen {
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         hoverStack = ItemStack.EMPTY;
-        g.fill(0, 0, this.width, this.height, 0x88000000);
-        g.fill(leftPos, topPos, leftPos + globalWidth, topPos + globalHeight, 0xFF2D2319);
-        g.fill(leftPos + 5, topPos + 5, leftPos + globalWidth / 2 - 3, topPos + globalHeight - 5, 0x55000000);
-        g.fill(listX - 2, topPos + 5, leftPos + globalWidth - 5, topPos + globalHeight - 5, 0x33000000);
+        g.fill(0, 0, this.width, this.height, 0xB0000000);
+        g.blit(BACKGROUND, leftPos, topPos, globalWidth, globalHeight,
+                0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        g.fill(tabsX, tabsTop - 20, tabsX + tabsWidth, tabsTop - 2, 0xD0382D24);
+        g.drawString(font, title, tabsX + 5, tabsTop - 15, 0xFFF4DDA4, false);
+        String count = Integer.toString(entries.size());
+        g.drawString(font, count, tabsX + tabsWidth - 5 - font.width(count), tabsTop - 15, 0xFFB8A17B, false);
+        g.fill(infoX - 4, contentTop - 4, infoX + infoW + 4, contentBottom, 0xD0302821);
+        g.fill(listX - 4, contentTop - 4, listX + listW + 4, contentBottom, 0xD0302821);
 
         renderTabs(g, mouseX, mouseY);
         renderList(g, mouseX, mouseY);
         if (selected == null) {
             Component hint = Component.translatable("gui.mnemic_odyssey.compendium.select_hint");
-            g.drawCenteredString(font, hint, infoX + infoW / 2, topPos + globalHeight / 2, 0xAAAAAA);
+            int hintY = contentTop + 18;
+            for (FormattedCharSequence line : font.split(hint, Math.max(1, infoW - 8))) {
+                g.drawCenteredString(font, line, infoX + infoW / 2, hintY, 0xFFB9A98D);
+                hintY += 10;
+            }
+            detailMaxScroll = 0;
         } else {
+            g.enableScissor(infoX, contentTop, infoX + infoW, contentBottom);
             renderInfo(g, mouseX, mouseY);
+            g.disableScissor();
+            renderScrollBar(g, infoX + infoW - 3, contentTop, contentBottom, detailScroll, detailMaxScroll);
         }
         if (!hoverStack.isEmpty()) g.renderTooltip(font, hoverStack, mouseX, mouseY);
     }
 
     private void renderTabs(GuiGraphics g, int mx, int my) {
         CompendiumCategory[] tabs = CompendiumCategory.values();
+        int tabWidth = tabsWidth / tabs.length;
         for (int i = 0; i < tabs.length; i++) {
             boolean active = tabs[i] == currentTab;
-            int x = leftPos + globalWidth - (active ? 0 : 3);
-            int y = topPos + 10 + i * (TAB_H + 4);
-            g.fill(x, y, x + TAB_W, y + TAB_H, active ? 0xFF7A5F43 : 0xFF4D3E30);
+            int x = tabsX + i * tabWidth;
+            boolean hover = mx >= x && mx < x + tabWidth - 3 && my >= tabsTop && my < tabsTop + TAB_H;
+            g.fill(x, tabsTop, x + tabWidth - 3, tabsTop + TAB_H, active ? 0xFF8E7047 : hover ? 0xFF65513B : 0xFF493A2D);
+            if (active) g.fill(x, tabsTop + TAB_H - 2, x + tabWidth - 3, tabsTop + TAB_H, 0xFFE8C27A);
             Component name = Component.translatable("gui.mnemic_odyssey.compendium.tab." + tabs[i].key);
-            g.drawCenteredString(font, name, x + TAB_W / 2, y + (TAB_H - 8) / 2, active ? 0xFFFFFF : 0xC8B89A);
+            String label = font.plainSubstrByWidth(name.getString(), Math.max(1, tabWidth - 8));
+            g.drawCenteredString(font, label, x + (tabWidth - 3) / 2, tabsTop + 7, active ? 0xFFFFFFFF : 0xFFD0C1A4);
         }
     }
 
     private void renderList(GuiGraphics g, int mx, int my) {
         if (entries.isEmpty()) {
             g.drawCenteredString(font, Component.translatable("gui.mnemic_odyssey.compendium.empty"),
-                    listX + listW / 2, topPos + globalHeight / 2, 0x888888);
+                    listX + listW / 2, contentTop + 18, 0xFFB9A98D);
             return;
         }
+        g.enableScissor(listX, contentTop, listX + listW, contentBottom);
         for (int row = 0; row < visibleRows; row++) {
-            for (int col = 0; col < COLS; col++) {
-                int idx = (scroll + row) * COLS + col;
-                if (idx >= entries.size()) return;
+            for (int col = 0; col < columns; col++) {
+                int idx = (scroll + row) * columns + col;
+                if (idx >= entries.size()) break;
                 ResourceLocation id = entries.get(idx);
-                int x = listX + col * cellW, y = topPos + 5 + row * CELL_H;
-                boolean hover = mx >= x && mx < x + cellW - 2 && my >= y && my < y + CELL_H - 2;
-                int bg = id.equals(selected) ? 0xAA9C7A3C : hover ? 0x66FFFFFF : 0x44000000;
-                g.fill(x, y, x + cellW - 2, y + CELL_H - 2, bg);
-                g.renderItem(CompendiumLogic.iconFor(currentTab, id), x + 2, y + 2);
-                String name = font.plainSubstrByWidth(CompendiumLogic.displayName(currentTab, id).getString(), cellW - 26);
-                g.drawString(font, name, x + 22, currentTab.leveled ? y + 3 : y + 7, 0xFFFFFF, false);
+                int x = listX + col * cellW, y = contentTop + row * CELL_H;
+                boolean hover = mx >= x && mx < x + cellW - 3 && my >= y && my < y + CELL_H - 3;
+                int bg = id.equals(selected) ? 0xFF795F3C : hover ? 0xFF5A4938 : 0xFF3B3128;
+                g.fill(x, y, x + cellW - 3, y + CELL_H - 3, bg);
+                if (id.equals(selected)) g.fill(x, y, x + 2, y + CELL_H - 3, 0xFFE5BE75);
+                g.renderItem(CompendiumLogic.iconFor(currentTab, id), x + 5, y + 4);
+                String name = font.plainSubstrByWidth(CompendiumLogic.displayName(currentTab, id).getString(), Math.max(1, cellW - 30));
+                g.drawString(font, name, x + 26, currentTab.leveled ? y + 3 : y + 8, 0xFFF8EBD1, false);
                 if (currentTab.leveled) {
                     CompendiumProgress p = data().get(currentTab, id);
-                    g.drawString(font, "Lv." + p.level, x + 22, y + 12, p.level >= CompendiumLogic.MAX_LEVEL ? 0xFFD700 : 0xE0C070, false);
+                    g.drawString(font, "Lv." + p.level, x + 26, y + 13, p.level >= CompendiumLogic.MAX_LEVEL ? 0xFFFFD875 : 0xFFC5AE88, false);
                 }
+                if (hover) hoverStack = CompendiumLogic.iconFor(currentTab, id);
             }
         }
+        g.disableScissor();
+        int maxScroll = Math.max(0, (entries.size() + columns - 1) / columns - visibleRows);
+        renderScrollBar(g, listX + listW - 2, contentTop, contentBottom, scroll, maxScroll);
+    }
+
+    private void renderScrollBar(GuiGraphics g, int x, int top, int bottom, int value, int max) {
+        if (max <= 0 || bottom <= top) return;
+        int track = bottom - top;
+        int thumb = Math.min(track, Math.max(12, track * track / (track + max * 10)));
+        int y = top + (track - thumb) * value / max;
+        g.fill(x, top, x + 2, bottom, 0xFF473B30);
+        g.fill(x, y, x + 2, y + thumb, 0xFFC5A66F);
     }
 
     // ---- 详情 ----
@@ -157,8 +219,7 @@ public class MemoryCompendiumScreen extends Screen {
     private int cy;
 
     private void line(GuiGraphics g, Component c, int color) {
-        for (FormattedCharSequence s : font.split(c, infoW - 4)) {
-            if (cy + 9 > topPos + globalHeight - 8) return;
+        for (FormattedCharSequence s : font.split(c, Math.max(1, infoW - 8))) {
             g.drawString(font, s, infoX + 2, cy, color, false);
             cy += 10;
         }
@@ -169,7 +230,7 @@ public class MemoryCompendiumScreen extends Screen {
         ResourceLocation id = selected;
         CompendiumProgress pr = data().get(cat, id);
         if (pr == null) return;
-        int top = topPos + 10;
+        int top = contentTop + 3 - detailScroll;
 
         // 标题
         ItemStack icon = CompendiumLogic.iconFor(cat, id);
@@ -178,13 +239,15 @@ public class MemoryCompendiumScreen extends Screen {
         g.pose().scale(2f, 2f, 1f);
         g.renderItem(icon, 0, 0);
         g.pose().popPose();
-        g.drawString(font, CompendiumLogic.displayName(cat, id), infoX + 42, top + 4, 0xFFE9B0, false);
-        g.drawString(font, id.toString(), infoX + 42, top + 18, 0x77705F, false);
+        String name = font.plainSubstrByWidth(CompendiumLogic.displayName(cat, id).getString(), Math.max(1, infoW - 46));
+        String registryName = font.plainSubstrByWidth(id.toString(), Math.max(1, infoW - 46));
+        g.drawString(font, name, infoX + 42, top + 4, 0xFFE9B0, false);
+        g.drawString(font, registryName, infoX + 42, top + 18, 0xFFAA987D, false);
         cy = top + 38;
 
         if (cat == CompendiumCategory.MOB || cat == CompendiumCategory.BOSS) {
-            renderEntity(g, id, infoX, cy, infoX + infoW, cy + 80, mx, my);
-            cy += 84;
+            renderEntity(g, id, infoX, cy, infoX + infoW - 6, cy + 60, mx, my);
+            cy += 66;
         }
 
         if (cat.leveled) {
@@ -196,6 +259,8 @@ public class MemoryCompendiumScreen extends Screen {
             case MOB, BOSS -> mobInfo(g, id, cat);
             case ITEM -> itemInfo(g, id, mx, my);
         }
+        detailMaxScroll = Math.max(0, cy + detailScroll - contentBottom + 5);
+        detailScroll = Math.min(detailScroll, detailMaxScroll);
     }
 
     private void renderLevel(GuiGraphics g, CompendiumCategory cat, ResourceLocation id, CompendiumProgress pr) {
@@ -297,7 +362,6 @@ public class MemoryCompendiumScreen extends Screen {
             int rows = (int) Math.ceil(ings.size() / (double) w);
             if (r instanceof ShapedRecipe sr) rows = sr.getHeight();
             int gridH = Math.max(rows, 1) * 18;
-            if (cy + gridH > topPos + globalHeight - 8) return;
             for (int i = 0; i < ings.size(); i++) {
                 int x = infoX + 4 + (i % w) * 18, y = cy + (i / w) * 18;
                 g.fill(x, y, x + 17, y + 17, 0x66000000);
@@ -305,7 +369,7 @@ public class MemoryCompendiumScreen extends Screen {
                 if (opts.length == 0) continue;
                 ItemStack st = opts[(int) ((System.currentTimeMillis() / 1000) % opts.length)];
                 g.renderItem(st, x + 1, y + 1);
-                if (mx >= x && mx < x + 17 && my >= y && my < y + 17) hoverStack = st;
+                if (my >= contentTop && my < contentBottom && mx >= x && mx < x + 17 && my >= y && my < y + 17) hoverStack = st;
             }
             int ax = infoX + 4 + w * 18 + 8;
             g.drawString(font, "\u2192", ax, cy + gridH / 2 - 4, 0xFFFFFF, false);
@@ -314,7 +378,7 @@ public class MemoryCompendiumScreen extends Screen {
             g.fill(rx, ry, rx + 17, ry + 17, 0x66000000);
             g.renderItem(res, rx + 1, ry + 1);
             g.renderItemDecorations(font, res, rx + 1, ry + 1);
-            if (mx >= rx && mx < rx + 17 && my >= ry && my < ry + 17) hoverStack = res;
+            if (my >= contentTop && my < contentBottom && mx >= rx && mx < rx + 17 && my >= ry && my < ry + 17) hoverStack = res;
             cy += gridH + 8;
         }
     }
@@ -336,16 +400,13 @@ public class MemoryCompendiumScreen extends Screen {
 
     private void select(ResourceLocation id) {
         selected = id;
+        detailScroll = 0;
+        detailMaxScroll = 0;
         recipeCache = List.of();
         if (currentTab == CompendiumCategory.ITEM && Minecraft.getInstance().level != null) {
-            var item = BuiltInRegistries.ITEM.get(id);
-            var access = Minecraft.getInstance().level.registryAccess();
             List<RecipeHolder<?>> found = new ArrayList<>();
-            for (RecipeHolder<?> h : Minecraft.getInstance().level.getRecipeManager().getRecipes()) {
-                if (h.value().getResultItem(access).is(item)) {
-                    found.add(h);
-                    if (found.size() >= 2) break;
-                }
+            for (ResourceLocation recipeId : Minecraft.getInstance().player.getData(ModAttachments.CRAFT_HISTORY).getOrDefault(id, List.of())) {
+                Minecraft.getInstance().level.getRecipeManager().byKey(recipeId).ifPresent(found::add);
             }
             recipeCache = found;
         }
@@ -353,26 +414,32 @@ public class MemoryCompendiumScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mx, double my, int button) {
+        if (button != 0) return super.mouseClicked(mx, my, button);
         CompendiumCategory[] tabs = CompendiumCategory.values();
+        int tabWidth = tabsWidth / tabs.length;
         for (int i = 0; i < tabs.length; i++) {
-            int x = leftPos + globalWidth - (tabs[i] == currentTab ? 0 : 3);
-            int y = topPos + 10 + i * (TAB_H + 4);
-            if (mx >= x && mx < x + TAB_W && my >= y && my < y + TAB_H) {
+            int x = tabsX + i * tabWidth;
+            if (mx >= x && mx < x + tabWidth - 3 && my >= tabsTop && my < tabsTop + TAB_H) {
                 if (currentTab != tabs[i]) {
                     currentTab = tabs[i];
                     selected = null;
+                    detailScroll = 0;
+                    detailMaxScroll = 0;
                     scroll = 0;
                     refreshEntries(true);
                 }
                 return true;
             }
         }
+        if (mx < listX || mx >= listX + listW || my < contentTop || my >= contentBottom) {
+            return super.mouseClicked(mx, my, button);
+        }
         for (int row = 0; row < visibleRows; row++) {
-            for (int col = 0; col < COLS; col++) {
-                int idx = (scroll + row) * COLS + col;
+            for (int col = 0; col < columns; col++) {
+                int idx = (scroll + row) * columns + col;
                 if (idx >= entries.size()) break;
-                int x = listX + col * cellW, y = topPos + 5 + row * CELL_H;
-                if (mx >= x && mx < x + cellW - 2 && my >= y && my < y + CELL_H - 2) {
+                int x = listX + col * cellW, y = contentTop + row * CELL_H;
+                if (mx >= x && mx < x + cellW - 3 && my >= y && my < y + CELL_H - 3) {
                     select(entries.get(idx));
                     return true;
                 }
@@ -383,9 +450,16 @@ public class MemoryCompendiumScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
-        int maxScroll = Math.max(0, (entries.size() + COLS - 1) / COLS - visibleRows);
-        scroll = Math.max(0, Math.min(maxScroll, scroll - (int) Math.signum(scrollY)));
-        return true;
+        if (my >= contentTop && my < contentBottom && mx >= infoX && mx < infoX + infoW) {
+            detailScroll = Math.max(0, Math.min(detailMaxScroll, detailScroll - (int) Math.signum(scrollY) * 24));
+            return true;
+        }
+        if (my >= contentTop && my < contentBottom && mx >= listX && mx < listX + listW) {
+            int maxScroll = Math.max(0, (entries.size() + columns - 1) / columns - visibleRows);
+            scroll = Math.max(0, Math.min(maxScroll, scroll - (int) Math.signum(scrollY)));
+            return true;
+        }
+        return super.mouseScrolled(mx, my, scrollX, scrollY);
     }
 
     @Override

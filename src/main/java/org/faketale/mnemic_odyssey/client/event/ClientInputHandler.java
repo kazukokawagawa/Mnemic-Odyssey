@@ -32,7 +32,7 @@ public class ClientInputHandler {
         int key = event.getKey();
 
         //打开记忆图鉴
-        if (key == ModConfig.OpenCompendiumKey.get()) {
+        if (key == ModConfig.OpenCompendiumKey.get() && org.faketale.mnemic_odyssey.compendium.CompendiumLogic.hasCompendium(mc.player)) {
             mc.setScreen(new MemoryCompendiumScreen());
         }
         //忆如泉涌
